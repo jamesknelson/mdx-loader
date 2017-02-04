@@ -1,0 +1,22 @@
+{
+  "name": "mdx-loader",
+  "version": "0.1.0",
+  "description": "Webpack loader for MDX (i.e. JSX-infused Markdown) using mdx-it",
+  "main": "index.js",
+  "keywords": [
+    "markdown",
+    "jsx",
+    "webpack",
+    "loader",
+    "mdx"
+  ],
+  "author": "James K Nelson <james@jamesknelson.com>",
+  "license": "MIT",
+  "dependencies": {
+    "front-matter": "^2.1.2",
+    "loader-utils": "^0.2.16",
+    "mdx-it": "^0.1.0",
+    "markdown-it-anchor": "^2.6.0",
+    "prismjs": "^1.6.0"
+  }
+}
