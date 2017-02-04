@@ -15,8 +15,8 @@
   "dependencies": {
     "front-matter": "^2.1.2",
     "loader-utils": "^0.2.16",
-    "mdx-it": "^0.1.0",
     "markdown-it-anchor": "^2.6.0",
+    "mdx-it": "^0.1.0",
     "prismjs": "^1.6.0"
   }
 }
