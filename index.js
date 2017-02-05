@@ -41,7 +41,7 @@ function mdImageReplacer(md) {
 
         var uri = url.parse(src);
         uri.hash = null;
-        token.attrSet('src', 'require("'+uri.format()+'")');
+        token.attrSet('src', { __jsx: 'require("'+uri.format()+'")' });
       }
     }
 
