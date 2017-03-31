@@ -1,14 +1,17 @@
 "use strict";
 
-var url = require('url')
-var loaderUtils = require('loader-utils')
-var frontMatter = require('front-matter')
-var mdAnchor = require('markdown-it-anchor')
-var Prism = require('prismjs')
-var MDXIt = require('mdx-it')
+const url = require('url')
+const path = require('path')
+const loaderUtils = require('loader-utils')
+const frontMatter = require('front-matter')
+const Prism = require('prismjs')
+const MDXC = require('mdxc')
 
 
-var aliases = {
+const env = {};
+
+
+const aliases = {
   'js': 'jsx',
   'html': 'markup'
 }
@@ -35,11 +38,11 @@ function mdImageReplacer(md) {
       }
 
       if (token.type === 'image') {
-        var src = token.attrGet('src')
+        const src = token.attrGet('src')
 
         if(!loaderUtils.isUrlRequest(src)) return;
 
-        var uri = url.parse(src);
+        const uri = url.parse(src);
         uri.hash = null;
         token.attrSet('src', { __jsx: 'require("'+uri.format()+'")' });
       }
@@ -50,29 +53,16 @@ function mdImageReplacer(md) {
 }
 
 
-module.exports = function markdownLoader(content) {
-  this.cacheable();
+module.exports = function mdxLoader(content) {
+  const loaderOptions = loaderUtils.getOptions(this) || {};
 
-  var options = loaderUtils.parseQuery(this.query);
+  if (loaderOptions.linkify === undefined) loaderOptions.linkify = true;
+  if (loaderOptions.typographer === undefined) loaderOptions.typographer = true;
+  if (loaderOptions.highlight === undefined) loaderOptions.highlight = highlight;
 
-  if (options.linkify === undefined) options.linkify = true;
-  if (options.typographer === undefined) options.typographer = true;
-  if (options.highlight === undefined) options.highlight = highlight;
+  let md = new MDXC(loaderOptions).use(mdImageReplacer)
 
-  var md =
-    new MDXIt(options)
-      .use(mdImageReplacer)
-      .use(mdAnchor);
-
-  var data = frontMatter(content);
-
-  // Make the plain body and meta available to the next loader
-  this.value = {
-    meta: data.attributes,
-    body: md.render(data.body),
-  };
-
-  return `${this.value.body}
-module.exports.meta = ${JSON.stringify(this.value.meta, null, 2)}
-`;
+  const data = frontMatter(content);
+  const body = md.render(data.body, env);
+  return body + `\n${loaderOptions.commonJS ? 'module.exports.meta' : 'export const meta'} = ${JSON.stringify(data.attributes, null, 2)}`
 }
