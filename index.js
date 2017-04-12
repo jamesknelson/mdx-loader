@@ -62,6 +62,12 @@ module.exports = function mdxLoader(content) {
 
   let md = new MDXC(loaderOptions).use(mdImageReplacer)
 
+  if (loaderOptions.pragma) {
+    Object.assign(md.factories, {
+      codeBlock: '(props, children) => '+loaderOptions.pragma+'("pre", props, '+loaderOptions.pragma+'("code", { dangerouslySetInnerHTML: { __html: children || props.children } }))'
+    })
+  }
+
   const data = frontMatter(content);
   const body = md.render(data.body, env);
   return body + `\n${loaderOptions.commonJS ? 'module.exports.meta' : 'export const meta'} = ${JSON.stringify(data.attributes, null, 2)}`
